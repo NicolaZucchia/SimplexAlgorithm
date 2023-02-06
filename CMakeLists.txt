@@ -1,16 +1,6 @@
+
+
 cmake_minimum_required(VERSION 3.17)
-
-# Per mingw...
-
-# set(CMAKE_C_COMPILER "C:/MinGW/bin/gcc.exe")
-# set(CMAKE_CXX_COMPILER "C:/MinGW/bin/g++.exe")
-
-# Se usi ninja, a terminale:
-
-# cmake -G Ninja .
-# ninja
-
-# Poi esegui i file come faresti di solito
 
 project(esame)
 

@@ -21,13 +21,13 @@ int main() {
     // checking if the system is feasible
     lcs.is_feasible();
 
-    // creating a vector for objective function coefficients
+    // vector for objective function coefficients
     std::vector<double> c = { -2, -1 };
 
-    // creating a vector for optimal solution
+    // ector for optimal solution
     std::vector<double> solution;
 
-    // performing optimization for constrain system with objective function c*x
+    // executing optimization of constrain system with objective function c*x
     LinearConstrainSystem<double>::SolutionType result = lcs.optimize(solution, c, LinearConstrainSystem<double>::OptimizationType::MIN);
 
     return 0;

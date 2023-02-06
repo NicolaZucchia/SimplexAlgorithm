@@ -14,10 +14,10 @@ struct LinearConstrainSystem;
 /**
  * @brief struct for Tableau and linked functions
  * 
- * @tparam T
+ * @tparam T 
  */
 template<typename T>
-struct Tableau {
+class Tableau {
     
     // data structure tableau for saving its data
     std::vector<std::vector<T>> tableau;
@@ -25,19 +25,19 @@ struct Tableau {
     std::vector<size_t> base;
     // number of variables
     size_t num_variables{0};
-    // number of constrais
+    // number of constrains
     size_t num_constrains{0};
     // number of slack variables
     size_t slack_variables{0};   
     // number of surplus variables
     size_t surplus_variables{0};   
     // number of artificial variables
-    size_t artificial_variables{0};   
+    size_t artificial_variables{0};
+    // defining Big_M with a very large value
+    double BIG_M = 1e9;
+    // indexes (i,j) for position of artificial variables inside tableau
+    std::vector<std::pair<size_t, size_t>> artificial_var_indices;
 
-    // empty constructor
-    Tableau() {}
-    // copy constructor
-    Tableau(const Tableau<T>& orig);
 
     // method to get number of columns in tableau
     inline size_t get_total_columns() { return num_variables + slack_variables + surplus_variables + artificial_variables + 1; }
@@ -48,9 +48,9 @@ struct Tableau {
     // method to add the objective function to tableau
     void add_objFunc_tableau(const std::vector<T>& c, const typename LinearConstrainSystem<T>::OptimizationType type);
     #ifdef PRINT
-    // metodo per stampare il Tableau
+    // method to print tableau
     void print_tableau() const;
-    // stampa i valori in base
+    // method to print base values
     void print_base() const;    
     #endif // PRINT
     // method to add a row to tableau when the case is LE
@@ -66,12 +66,12 @@ struct Tableau {
     // method to perform pivot operation
     void pivot(int pivot_row, int pivot_column);
 
- private: 
+    // empty constructor
+    Tableau() {}
+    // copy constructor
+    Tableau(const Tableau<T>& orig);
 
-    // defining Big_M with a very large value
-    double BIG_M = 1e9; // 1e9 is the most common choice for Big_M method  
-    // indexes (i,j) for position of artificial variables inside tableau
-    std::vector<std::pair<size_t, size_t>> artificial_var_indices;
+    friend struct LinearConstrainSystem<T>;
 };
 
 
@@ -98,7 +98,7 @@ Tableau<T>::Tableau(const Tableau<T>& orig) {
 /**
  * @brief method to add system constrains in Tableau
  * 
- * @tparam T 
+ * @tparam T
  * @param constrains vector of Constrain objects to represent system constrains
  */
 template<typename T>
@@ -166,7 +166,7 @@ void Tableau<T>::create_initial_tableau(std::vector<typename LinearConstrainSyst
 /**
  * @brief method to add a LE constrain into a Tableau row
  * 
- * @tparam T 
+ * @tparam T
  * @param a vector of constrain's decisional variables coefficients
  * @param b constrain's known term
  * @param current_row current row index inside tableau
@@ -176,7 +176,7 @@ void Tableau<T>::add_LE_row_tableau(const std::vector<T>& a, const T& b, size_t 
 
     // if not in the first row
     if(current_row>0){
-        // for every column reserved to additional variables (i.e. left part of the tableau)
+        // for every column reserved to additional variables
         for (size_t i = 0; i < get_decVars_index(); ++i) {
             // if in previous row there is an element equal to -1
             if (tableau[current_row-1][i] == 1 && tableau[current_row-1][i+1] == -1) {
@@ -189,7 +189,7 @@ void Tableau<T>::add_LE_row_tableau(const std::vector<T>& a, const T& b, size_t 
             }else if(tableau[current_row-1][i] == 1) {
                 // adding coefficient of slack variable                
                 tableau[current_row][i+1] = 1;
-                // adding base variable               
+                // adding base variable                  
                 base.emplace_back(i+1);
                 break;
             }
@@ -198,7 +198,7 @@ void Tableau<T>::add_LE_row_tableau(const std::vector<T>& a, const T& b, size_t 
     }else{
         // adding coefficient of slack variable
         tableau[current_row][0] = 1;
-        // adding base variable
+        //  adding base variable
         base.emplace_back(0);
     }
 
@@ -223,8 +223,8 @@ template<typename T>
 void Tableau<T>::add_GE_row_tableau(const std::vector<T>& a, const T& b, size_t current_row){
 
     // if not in first row
-    if(current_row > 0){
-        // for every column regarding additional variables (i.e. left part of tableau)
+    if(current_row>0){
+        // for every column regarding additional variables
         for (size_t i = 0; i < get_decVars_index(); ++i) {
             // if in the previous row there is an element equal to -1
             if (tableau[current_row-1][i] == 1 && tableau[current_row-1][i+1] == -1) {
@@ -260,9 +260,9 @@ void Tableau<T>::add_GE_row_tableau(const std::vector<T>& a, const T& b, size_t 
 
 
 /**
- * @brief method to add a GE constrain into a row of tableau
+ * @brief method to add a EQ constrain into a row of tableau
  * 
- * @tparam T 
+ * @tparam T
  * @param a vector of constrain's decisional variable coefficients
  * @param b constrain's known term 
  * @param current_row current row index inside tableau
@@ -272,7 +272,7 @@ void Tableau<T>::add_EQ_row_tableau(const std::vector<T>& a, const T& b, size_t 
 
     // if not in first row
     if(current_row>0){
-        // for every column reserved to additional variables (i.e. left part of tableau)
+        // for every column reserved to additional variables
         for (size_t i = 0; i < get_decVars_index(); ++i) {
             // if there is an element equal to -1 in previous row
             if (tableau[current_row-1][i] == 1 && tableau[current_row-1][i+1] == -1) {
@@ -307,7 +307,7 @@ void Tableau<T>::add_EQ_row_tableau(const std::vector<T>& a, const T& b, size_t 
 /**
  * @brief method to add objective function row with "Big-M" method
  * 
- * @tparam T 
+ * @tparam T
  * @param c vector of objective function coefficients
  * @param type optimization type
  */
@@ -359,12 +359,12 @@ void Tableau<T>::add_objFunc_tableau(const std::vector<T>& c, const typename Lin
             tableau[ObjFunc_row][col_index] -= factor * tableau[indeces.first][col_index];
         }        
     }
-    // now simplex algorithm can start
+    // ow simplex algorithm can start
     #ifdef PRINT
     std::cout << "---Start Simplex---" << std::endl;
-    std::cout << "Tableau iniziale: " << std::endl;
+    std::cout << "Initial tableau: " << std::endl;
     print_tableau();
-    std::cout << "Base iniziale: " << std::endl;
+    std::cout << "Initial base: " << std::endl;
     print_base();
     #endif // PRINT
 }
@@ -373,7 +373,7 @@ void Tableau<T>::add_objFunc_tableau(const std::vector<T>& c, const typename Lin
 /**
  * @brief method for pivot operation
  * 
- * @tparam T 
+ * @tparam T
  * @param pivot_row index of base exiting variable row
  * @param pivot_column index of base entering variable column
  */
@@ -386,7 +386,7 @@ void Tableau<T>::pivot(int pivot_row, int pivot_column) {
     print_base();
     #endif // PRINT
     // number of rows in tableau
-    size_t tot_rows = tableau.size();
+    int tot_rows = tableau.size();
     // pivot element
     T pivot_element = tableau[pivot_row][pivot_column];
     // dividing all elements in pivot row by pivot element
@@ -419,7 +419,7 @@ void Tableau<T>::pivot(int pivot_row, int pivot_column) {
 /**
  * @brief method to determine index of base-entering variable column 
  * 
- * @tparam T 
+ * @tparam T
  * @return 'int' index of base-entering variable columns
  */
 template <typename T>
@@ -446,7 +446,7 @@ int Tableau<T>::find_pivot_column() {
         }
     }
     #ifdef PRINT
-    std::cout<<"Pivot column entrante: "<< pivot_column<< std::endl;
+    std::cout<<"Pivot column entering: "<< pivot_column<< std::endl;
     #endif // PRINT
     return pivot_column;
 }
@@ -455,7 +455,7 @@ int Tableau<T>::find_pivot_column() {
 /**
  * @brief method to find index of base exiting variable
  * 
- * @tparam T 
+ * @tparam T
  * @param pivot_column index of base entering variable
  * @return 'int' index of base exiting variable row
  */
@@ -488,7 +488,7 @@ int Tableau<T>::find_pivot_row(int pivot_column) {
         }
     }
     #ifdef PRINT
-    std::cout << "Pivot row uscente: " << pivot_row << std::endl;
+    std::cout << "Pivot row exiting: " << pivot_row << std::endl;
     std::cout << std::endl;
     #endif // PRINT
     // returing index of selected base variable

@@ -6,7 +6,7 @@
 /**
  * @brief Struct to represent a linear constrain system
  * 
- * @tparam T is the parametric type
+ * @tparam T  is the parametric type
  */
 template<typename T>
 struct LinearConstrainSystem {
@@ -30,7 +30,7 @@ struct LinearConstrainSystem {
         T b;
         // constrain type
         ConstrainType type;
-        // emptry constructor
+        // empty constructor
         Constrain() {}
         // initialization constructor
         Constrain(std::vector<T> a, T b, ConstrainType type) : a(a), b(b), type(type) {}
@@ -38,19 +38,12 @@ struct LinearConstrainSystem {
         Constrain(const Constrain& orig) : a(orig.a), b(orig.b), type(orig.type) {}
     };
 
-    // vector containing objects of type Constrain
-    std::vector<Constrain> constrains;
-    // object of the struct Tableau
-    Tableau<T> tab; 
-    // flag to keep track whether the user has already executed the is_feasible method for a constrain system
-    bool feasibility_test{false};
-
     // empty constructor
     LinearConstrainSystem() {}
     // copy constructor
     LinearConstrainSystem(const LinearConstrainSystem& orig) : constrains(orig.constrains), tab(orig.tab) {}
 
-    // ADd constrain a*x type b, e.g., a*x <= b
+    // Add constrain a*x type b, e.g., a*x <= b
     inline LinearConstrainSystem& add_constrain(const std::vector<T>& a, const T& b, const ConstrainType type){ 
         // adding constrain to vector of constrains
         constrains.emplace_back(a, b, type);
@@ -69,10 +62,18 @@ struct LinearConstrainSystem {
   private:
     // method to update useful information about Tableau construction
     void update_tableau_info();
-    // method to check if input constrain are valid (i.e. have correct synthax)
+    // method to check if input constrain are valid
     void check_valid_constrains() const;
-    // method to check if input objective function is valid (i.e. has correct synthax)
+    // method to check if input objective function is valid
     void check_valid_objFunc(const std::vector<T>& c, const OptimizationType type) const;
+
+    // vector containing objects of type Constrain
+    std::vector<Constrain> constrains;
+    // object of the struct Tableau
+    Tableau<T> tab; 
+    // flag to keep track whether the user has already executed the is_feasible method for a constrain system
+    bool feasibility_test{false};
+    
 };
 
 
@@ -80,7 +81,7 @@ struct LinearConstrainSystem {
 /**
  * @brief method to update input information inside tableau
  * 
- * @tparam T parametric type
+ * @tparam T 
  */
 template<typename T>
 void LinearConstrainSystem<T>::update_tableau_info() {
@@ -124,7 +125,7 @@ void LinearConstrainSystem<T>::update_tableau_info() {
 /**
  * @brief method to check if input contrains are valid
  * 
- * @tparam T 
+ * @tparam T
  */
 template <typename T>
 void LinearConstrainSystem<T>::check_valid_constrains() const {
@@ -150,8 +151,7 @@ void LinearConstrainSystem<T>::check_valid_constrains() const {
 
 /**
  * @brief method to check if objective function coefficients and optimization type are valid
- * 
- * @tparam T 
+ * @tparam T generico
  * @param c vector for objective function coefficients
  * @param type optimization type
  */
@@ -201,7 +201,7 @@ bool LinearConstrainSystem<T>::is_feasible() {
     copy.tab.artificial_variables++;
     // creating initial tableau
     copy.tab.create_initial_tableau(copy.constrains);
-    // creo dummy objective variable
+    // creating dummy objective variable
     std::vector<T> c(copy.tab.num_variables - 1,0);
     c.emplace_back(1);
     // adding dummy objective variable to tableau
@@ -250,7 +250,7 @@ bool LinearConstrainSystem<T>::is_feasible() {
 /**
  * @brief method to optimize c*x executing pivot method on tableau
  * 
- * @tparam T 
+ * @tparam T
  * @param solution vector containing solution
  * @param c vector containing objective function coefficients
  * @param type optimization type
@@ -383,7 +383,7 @@ void LinearConstrainSystem<T>::print_Lcs(const std::vector<T>& c, const Optimiza
  * @param type optimization type
  * @param solution vector containing solution
  */
-template<typename T>
+template<typename T>  
 void LinearConstrainSystem<T>::print_result(SolutionType type, std::vector<T>& solution) const {
 
     // BOUNDED case
@@ -407,4 +407,3 @@ void LinearConstrainSystem<T>::print_result(SolutionType type, std::vector<T>& s
 }
 
 #endif // __LINEARCONSTRAINSYSTEM_HPP__
-

@@ -2,9 +2,9 @@
 
 Developers: Vittorio Amoruso, Nicola Cortinovis, Erion Islamay and Nicola Zucchia
 
-Project: Sequential Implementation of Simplex Algorithm with Big-M Method.
+Project: Sequential Implementation of Simplex Algorithm with Big-M Method
 
-## Repository Structure
+### Repository Structure
 
 * `LinearConstrainSystem.hpp` header containing the definition of the struct Linear Constrain System and its associated methods
 
@@ -21,9 +21,9 @@ Project: Sequential Implementation of Simplex Algorithm with Big-M Method.
 
 * `main.cpp` source file for testing a standard maximization problem
 
-## Prerequisiti
+## Prerequirements
 
-C++ | IDE to be chosen by user
+C++ | IDE (user's choice)
 
 Cmake
 
